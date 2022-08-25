@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.board.persistence.BoardMapper">
+
+
+	<!-- 공통되는 부분 -->
+	<sql id="search">
+				<trim prefix="(" suffix=") and " prefixOverrides="or">
+			<foreach item="sel" collection="selArr">
+				<trim prefix="or">
+					<choose>
+						<when test="sel=='T'.toString()">
+							title like '%'||#{keyword}||'%'
+						</when>
+						<when test="sel=='C'.toString()">
+							content like '%'||#{keyword}||'%'
+						</when>
+						<when test="sel=='W'.toString()">
+							writer like '%'||#{keyword}||'%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+
+	<select id="getList" resultType="com.board.domain.BoardVO">
+		select * from springboard
+	</select>
+
+	<select id="getListWithPaging"
+		resultType="com.board.domain.BoardVO">
+		<!-- 0825 수정 전... <![CDATA[ select bno, title, writer, reg from(select 
+			/*+ INDEX_DESC(springboard pk_springboard) */ rownum r, bno, title, writer, 
+			reg from springboard where rownum <= #{pageNum}*#{listQty}) where r> (#{pageNum}-1) 
+			* #{listQty} ]]> -->
+		<![CDATA[
+		select bno, title, writer, reg
+		from(select /*+ INDEX_DESC(springboard
+		pk_springboard) */
+		rownum r, bno, title, writer, reg from springboard
+		where 
+		]]>
+	<include refid="search"></include>
+		<![CDATA[	
+		rownum <= #{pageNum}*#{listQty})
+		where r> (#{pageNum}-1) * #{listQty}
+		]]>
+	</select>
+
+	<insert id="insert">
+		insert into springboard(bno, title, content, writer)
+		values(springboard_seq.nextval, #{title}, #{content}, #{writer})
+	</insert>
+
+	<insert id="insertSelectKey">
+
+		<!-- bno에다가 번호 꺼내기 -->
+		<selectKey keyProperty="bno" order="BEFORE"
+			resultType="long">
+			select springboard_seq.nextval from dual
+		</selectKey>
+		<!-- bno에 시퀀스 번호 꺼내서 담아주기 -->
+		insert into springboard(bno, title, content, writer)
+		values(#{bno},
+		#{title}, #{content}, #{writer})
+
+	</insert>
+
+	<select id="read" resultType="com.board.domain.BoardVO">
+		select * from springboard where bno
+		= #{bno}
+	</select>
+
+	<delete id="deleteBoard">
+		delete from springboard where bno = #{bno}
+	</delete>
+
+	<update id="updateBoard">
+		update springboard set
+		title=#{title},
+		content=#{content}, writer=#{writer}, reg = sysdate
+		where bno=#{bno}
+	</update>
+
+	<select id="getTotal" resultType="int">
+		select count(*) from
+		springboard
+		where 
+		<include refid="search"></include>
+		bno>0
+
+	</select>
+
+</mapper>
