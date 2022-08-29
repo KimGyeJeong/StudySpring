@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<!-- 시큐리티 설정파일 -->
+	<!-- 최소한의 세팅이 있어야 에러가 발생하지 않음 -->
+
+	<!-- 비밀번호 보호를 위한 암호화 클래스 빈 등록 -->
+	<bean id="bcryptPasswordEncoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+	<!-- 시큐리티에서 우리가 원하는 형태의 회원테이블로 처리되기 위한 클래스 빈으로 등록 -->
+	<bean id="customUserDetailsService"
+		class="com.member.service.CustomUserDetailsService"></bean>
+
+
+	<!-- 접근 제한 설정 -->
+	<security:http>
+		<!-- 특정 URI에 접근 제한 설정 -->
+		<!-- 인터셉터 사용 -->
+		<security:intercept-url pattern="/common/*"
+			access="permitAll" />
+		<security:intercept-url pattern="/member/*"
+			access="hasRole('ROLE_MEMBER')" />
+		<!-- 어드민만 접근 -->
+		<security:intercept-url pattern="/admin/*"
+			access="hasRole('ROLE_ADMIN')" />
+
+		<!-- 로그인페이지 세팅 default : <security:form-login /> -->
+		<!-- 시큐리티 로그인페이지를 커스텀 경로로 변경.(우리가 만든 로그인폼 경로) -->
+		<!-- 반드시 get 방식으로 해야함. post방식시 에러 -->
+		<security:form-login login-page="/common/login" />
+		
+		<!-- 로그아웃 -->
+		<!-- invalidate-session="true" 은 세션 삭제 -->
+		<!-- delete-cookies="JSESSION_ID" ~의 이름을 가진 쿠키 삭제 -->
+		<!-- logout-success-url="/common/main" 로그아웃을 성공하면 main으로 이동 -->
+		<security:logout logout-url="/logout" invalidate-session="true" delete-cookies="JSESSION_ID" logout-success-url="/common/main"/>
+
+	</security:http>
+
+	<!-- 인증과 권한 처리해주는 태그 -->
+	<security:authentication-manager>
+		<!-- <bean id="customUserDetailsService" class="com.member.service.CustomUserDetailsService"></bean> 
+			얘랑 관련이있음... 연결해서 DB에 가서 데이터 긁어온다음 포장해서 사용함. 권한에 대한 인증 해주는 authentication-provider 
+			-->
+		<security:authentication-provider
+			user-service-ref="customUserDetailsService">
+			<security:password-encoder
+				ref="bcryptPasswordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>

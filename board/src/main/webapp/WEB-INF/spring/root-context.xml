@@ -52,11 +52,17 @@
 	<!-- Mapper 스캔하도록 설정 -->
 	<mybatis-spring:scan
 		base-package="com.board.persistence" />
+	<!-- 0829 추가 -->
+	<mybatis-spring:scan
+		base-package="com.member.persistence" />
 
 	<!-- 서비스 패키지 스캔하여, @Component, @Service 등 어노테이션 붙은 클래스 스프링 빈으로 등록하도록 설정 
 		(빈으로 등록해야 객체가 생성되고 메서드 실행 가능) -->
 	<context:component-scan
 		base-package="com.board.service"></context:component-scan>
+	<!-- 0829 추가 -->
+	<context:component-scan
+		base-package="com.member.service"></context:component-scan>
 
 
 	<!-- 0826 aopconfig,bean추가 -->
@@ -67,8 +73,8 @@
 	<context:component-scan
 		base-package="com.board.aop"></context:component-scan>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
-	
-	
+
+
 	<!-- <aop:config> -->
 	<!--<aop:pointcut id="pc1" expression="execution(public void com.board.service.TestService*.hello*(..))"/> -->
 	<!-- <aop:pointcut id="pc1" expression="execution(* com.board.service.TestService*.*(..))" 

@@ -7,23 +7,43 @@
 
 	<!-- 한글깨짐 방지 위해 filter 추가 -->
 	<filter>
-		<filter-name>encoding</filter-name>
+		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>
 		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</filter>
 	<filter-mapping>
-		<filter-name>encoding</filter-name>
-		<servlet-name>appServlet</servlet-name>
+		<filter-name>encodingFilter</filter-name>
+		<!--  <servlet-name>/*</servlet-name> -->
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+	<!-- 한글깨짐 우선으로 한 뒤 시큐리티 필터 추가. 시큐리티 먼저하면 한글이 깨질수도있음 -->
+	<!-- 0829 시큐리티 필터 추가 -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 0829 시큐리피 필터추가 끝 -->
 
 	<!-- The definition of the Root Spring Container shared by all Servlets 
 		and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+		<param-value>
+		/WEB-INF/spring/root-context.xml
+		/WEB-INF/spring/security-context.xml
+		</param-value>
 	</context-param>
 
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->

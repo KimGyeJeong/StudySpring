@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.member.persistence.MemberMapper">
+
+	<!-- 회원 추가(가입) -->
+	<insert id="addMember">
+		insert into membersec(id, pw, name, email, gender)
+		values(#{id}, #{pw}, #{name}, #{email}, #{gender})
+	</insert>
+
+	<!-- 회원 권한 추가 -->
+	<insert id="addAuth">
+		insert into membersec_auth values(#{id}, #{auth})
+	</insert>
+
+	<!-- MemberVO 안에 컬ㄺ션 List 가 있으므로 select문 날려서 가져오는 결과를 MemberVO안에 잘 바인딩 시키고 
+		결과물을 리턴해주기 위해 result(리턴)타입인 MemberVO을 mybatis에서 잘 처리되도록 새로 정의하기 이때 resultMap 
+		태그 사용 -->
+	<!-- Collection이 문제임. VO에 List가 있음. mybatis가 잘 작동하도록 나머지 컬럼(id, pw ,,,)을 
+		채움 -->
+	<!-- 회원정보테이블의 데이터를 MemberVO의 변수에 각각 잘 바인딩되도록 변수에 대입할 컬럼 명확히 정의 -->
+	<resultMap type="com.member.domain.MemberVO" id="memberMap">
+		<!-- pk값이 무엇인지 지정해주는 것 -->
+		<id property="id" column="id" />
+		<!-- 컬럼 하나씩 넣어주기 -->
+		<result property="id" column="id" />
+		<result property="pw" column="pw" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="gender" column="gender" />
+		<result property="reg" column="reg" />
+		<result property="enabled" column="enabled" />
+		<collection property="authList" resultMap="authMap"></collection>
+	</resultMap>
+	<!-- 아래의 resultmap 은 위의 collection태그의 resultMap="authMap"에 담아줌 -->
+	<!-- 권한 테이블 값을 AuthVO 클래스에 대입하는 것. 명확하게 정의해주는 방식 -->
+	<!-- Collection타입때문에 지정해주는 것 -->
+	<resultMap type="com.member.domain.AuthVO" id="authMap">
+		<result property="id" column="id" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+
+
+	<!-- 회원 한명 정보 가져오기 -->
+	<!-- 일반데이터가져오는것이 아닌 list도 있기때문에 resultType 수정해주어야함 -->
+	<!-- 아래의 resultMap은 위의 id=authMap인걸 집어 넣어줌 -->
+	<select id="getMember" resultMap="memberMap">
+		select m.*, a.* from MEMBERSEC m, MEMBERSEC_AUTH a
+		where m.ID = a.ID
+		and m.id = #{id}
+	</select>
+
+	<!-- 회원정보 수정 -->
+	<update id="updateMember">
+		update membersec set name=#{name}, email=#{email}
+		where id=#{id}
+	</update>
+
+	<!-- 회원 삭제 -->
+	<delete id="deleteMember">
+		delete from membersec where id=#{id}
+	</delete>
+
+	<!-- 권한 삭제 -->
+	<delete id="deleteAuth">
+		delete from membersec_auth where id=#{id}
+	</delete>
+
+</mapper>
