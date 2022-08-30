@@ -1,4 +1,4 @@
-package com.member.service.domain;
+ package com.member.service.domain;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -9,7 +9,10 @@ import org.springframework.security.core.userdetails.User;
 
 import com.member.domain.MemberVO;
 
-public class CustomUser extends User{
+import lombok.Getter;
+
+@Getter
+public class CustomUser extends User{//jsp에서 principal
 	
 	//회원 정보 담을 인스턴스 변수 추가
 	private MemberVO member;

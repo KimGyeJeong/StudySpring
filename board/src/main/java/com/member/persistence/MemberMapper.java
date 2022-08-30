@@ -22,4 +22,7 @@ public interface MemberMapper {
 
 	// 권한 삭제
 	public int deleteAuth(String id);
+	
+	//id, pw 확인
+	public int idpwCheck(MemberVO member);
 }

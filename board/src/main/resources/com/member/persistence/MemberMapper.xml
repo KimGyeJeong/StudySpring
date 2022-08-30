@@ -16,7 +16,7 @@
 		insert into membersec_auth values(#{id}, #{auth})
 	</insert>
 
-	<!-- MemberVO 안에 컬ㄺ션 List 가 있으므로 select문 날려서 가져오는 결과를 MemberVO안에 잘 바인딩 시키고 
+	<!-- MemberVO 안에 컬렉션 List 가 있으므로 select문 날려서 가져오는 결과를 MemberVO안에 잘 바인딩 시키고 
 		결과물을 리턴해주기 위해 result(리턴)타입인 MemberVO을 mybatis에서 잘 처리되도록 새로 정의하기 이때 resultMap 
 		태그 사용 -->
 	<!-- Collection이 문제임. VO에 List가 있음. mybatis가 잘 작동하도록 나머지 컬럼(id, pw ,,,)을 
@@ -49,7 +49,7 @@
 	<!-- 일반데이터가져오는것이 아닌 list도 있기때문에 resultType 수정해주어야함 -->
 	<!-- 아래의 resultMap은 위의 id=authMap인걸 집어 넣어줌 -->
 	<select id="getMember" resultMap="memberMap">
-		select m.*, a.* from MEMBERSEC m, MEMBERSEC_AUTH a
+		select m.*, a.auth from MEMBERSEC m, MEMBERSEC_AUTH a
 		where m.ID = a.ID
 		and m.id = #{id}
 	</select>
@@ -69,5 +69,13 @@
 	<delete id="deleteAuth">
 		delete from membersec_auth where id=#{id}
 	</delete>
+	
+	<!-- id,pw 확인 -->
+	<select id="idpwCheck" resultType="int">
+		select count(*) from membersec where id=#{id}
+		<if test="pw!=null">
+			and pw=#{pw}
+		</if>
+	</select>
 
 </mapper>

@@ -15,6 +15,12 @@
 	<!-- 시큐리티에서 우리가 원하는 형태의 회원테이블로 처리되기 위한 클래스 빈으로 등록 -->
 	<bean id="customUserDetailsService"
 		class="com.member.service.CustomUserDetailsService"></bean>
+		
+	<!-- 0830추가. -->
+	<!-- 접근 제한시 처리할 핸들러 빈으로 등록 -->
+	<bean id="customAccessDenied" class="com.member.service.CustomAccessDeniedHandler"></bean>
+	<!-- 로그인 성공시 처리 해들러 빈으로 등록 -->
+	<bean id="loginSuccessHandler" class="com.member.service.CustomLoginSuccessHandler"></bean>
 
 
 	<!-- 접근 제한 설정 -->
@@ -28,17 +34,34 @@
 		<!-- 어드민만 접근 -->
 		<security:intercept-url pattern="/admin/*"
 			access="hasRole('ROLE_ADMIN')" />
+			
+		<!-- 0830 추가. -->
+		<!-- 접근 제한시 403페이지 대신 보여줄 페이지 세팅 
+		<security:access-denied-handler error-page="/common/accessError"/>
+		-->
+		<security:access-denied-handler ref="customAccessDenied"/>
 
 		<!-- 로그인페이지 세팅 default : <security:form-login /> -->
 		<!-- 시큐리티 로그인페이지를 커스텀 경로로 변경.(우리가 만든 로그인폼 경로) -->
 		<!-- 반드시 get 방식으로 해야함. post방식시 에러 -->
-		<security:form-login login-page="/common/login" />
+		<!-- 로그인 성공시 ~ref=""클래스 이동 -->
+		<security:form-login login-page="/common/login" authentication-success-handler-ref="loginSuccessHandler"/>
+		
+
+		
 		
 		<!-- 로그아웃 -->
 		<!-- invalidate-session="true" 은 세션 삭제 -->
 		<!-- delete-cookies="JSESSION_ID" ~의 이름을 가진 쿠키 삭제 -->
 		<!-- logout-success-url="/common/main" 로그아웃을 성공하면 main으로 이동 -->
-		<security:logout logout-url="/logout" invalidate-session="true" delete-cookies="JSESSION_ID" logout-success-url="/common/main"/>
+		<security:logout logout-url="/logout" invalidate-session="true" delete-cookies="JSESSION_ID,remember-me" logout-success-url="/common/main"/>
+		
+		<!-- 자동로그인 처리 -->
+		<!-- data-source-ref="dataSource" : DB에 접근 가능한 DataSource를 지정 
+		테이블을 이용해 로그인 정보 접근. dataSource는 root에 bean 을 생성했던것을 가져옴
+		 token-validity-seconds : 쿠키같은 느낌. 유효시간 지정. ==>쿠키 유효시간 설정. 60*60*24*7=604800 1주일 쿠키
+		-->
+		<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
 
 	</security:http>
 
