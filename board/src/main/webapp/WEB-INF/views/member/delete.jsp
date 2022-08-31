@@ -1,17 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>delete</title>
-<link href="/resources/member/css/style.css" rel="stylesheet" type="text/css">
+<link href="/resources/member/css/style.css" rel="stylesheet"
+	type="text/css">
 
 </head>
 <body>
-<div>
+	<div>
 		<form action="/member/delete" method="post">
-		<input type="hidden" name="${_csrf.parameterName}"
+			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}">
 			<table>
 				<tr>

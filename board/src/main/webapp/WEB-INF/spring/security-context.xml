@@ -63,6 +63,9 @@
 		-->
 		<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
 
+
+		<!-- csrf 필요없게.. -->
+		<security:csrf disabled="true"/>
 	</security:http>
 
 	<!-- 인증과 권한 처리해주는 태그 -->
