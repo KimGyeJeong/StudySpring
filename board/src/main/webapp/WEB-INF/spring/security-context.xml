@@ -19,8 +19,10 @@
 	<!-- 0830추가. -->
 	<!-- 접근 제한시 처리할 핸들러 빈으로 등록 -->
 	<bean id="customAccessDenied" class="com.member.service.CustomAccessDeniedHandler"></bean>
-	<!-- 로그인 성공시 처리 해들러 빈으로 등록 -->
+	<!-- 로그인 성공시 처리 핸들러 빈으로 등록 -->
 	<bean id="loginSuccessHandler" class="com.member.service.CustomLoginSuccessHandler"></bean>
+	<!-- 로그아웃 성공시 처리 핸들러 빈으로 등록 -->
+	<bean id="logoutSuccessHandler" class="com.member.service.CustomLogoutSuccessHandler"></bean>
 
 
 	<!-- 접근 제한 설정 -->
@@ -53,8 +55,10 @@
 		<!-- 로그아웃 -->
 		<!-- invalidate-session="true" 은 세션 삭제 -->
 		<!-- delete-cookies="JSESSION_ID" ~의 이름을 가진 쿠키 삭제 -->
-		<!-- logout-success-url="/common/main" 로그아웃을 성공하면 main으로 이동 -->
-		<security:logout logout-url="/logout" invalidate-session="true" delete-cookies="JSESSION_ID,remember-me" logout-success-url="/common/main"/>
+		<!-- logout-success-url="/common/main" 로그아웃을 성공하면 main으로 이동  logout-success-url="/common/main"-->
+		<!-- 0901 로그아웃시 핸들러 작성 -->
+		<security:logout logout-url="/logout" invalidate-session="true" 
+		delete-cookies="JSESSION_ID,remember-me" success-handler-ref="logoutSuccessHandler" />
 		
 		<!-- 자동로그인 처리 -->
 		<!-- data-source-ref="dataSource" : DB에 접근 가능한 DataSource를 지정 
@@ -65,7 +69,8 @@
 
 
 		<!-- csrf 필요없게.. -->
-		<security:csrf disabled="true"/>
+		<!-- 0901 다시 활성화 -->
+		<security:csrf disabled="false"/>
 	</security:http>
 
 	<!-- 인증과 권한 처리해주는 태그 -->

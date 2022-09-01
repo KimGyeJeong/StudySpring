@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!-- headerPage -->
 
 <!-- sbadmin에서 가져와서 붙여넣기 -->
@@ -16,6 +18,9 @@
 <meta name="description" content="">
 <!-- 개발자 -->
 <meta name="author" content="">
+
+<meta name="_csrf" content="${_csrf.token}" />
+<meta name="_csrf_header" content="${_csrf.headerName}" />
 
 <title>Board</title>
 
@@ -328,8 +333,11 @@
 							class="nav-link dropdown-toggle" href="#" id="userDropdown"
 							role="button" data-toggle="dropdown" aria-haspopup="true"
 							aria-expanded="false"> <span
-								class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas
-									McGee</span> <img class="img-profile rounded-circle"
+								class="mr-2 d-none d-lg-inline text-gray-600 small"> <%-- 0901 추가. 로그인 했으면 로그인정보로 이름 가져오기. --%>
+									<sec:authorize access="isAuthenticated()">
+										<sec:authentication property="principal.member.name" />
+									</sec:authorize>
+							</span> <img class="img-profile rounded-circle"
 								src="/resources/sbadmin2/img/undraw_profile.svg">
 						</a> <!-- Dropdown - User Information -->
 							<div
@@ -345,11 +353,32 @@
 									Activity Log
 								</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#" data-toggle="modal"
-									data-target="#logoutModal"> <i
-									class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-									Logout
-								</a>
+								<%-- 0901 추가 로그인 상태. 로그아웃으로--%>
+								<sec:authorize access="isAuthenticated()">
+									<%-- post 방식으로 로그아웃처리되기때문에 csrf가져가는 스크립트 처리 방식이 아닌 form 방식으로 함. 
+									<a id="logoutLink" class="dropdown-item" href="#"
+										data-toggle="modal" data-target="#logoutModal">
+									--%>
+									<a id="logoutLink" class="dropdown-item" href="#"
+										> <i
+										class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+										Logout
+									</a>
+								</sec:authorize>
+								<%-- 0901 추가 로그아웃 상태. 로그인으로--%>
+								<sec:authorize access="isAnonymous()">
+								<%-- 수정전 <a class="dropdown-item" href="/common/login"
+										data-toggle="modal" data-target="#logoutModal"> --%>
+									<a class="dropdown-item" href="/common/login"
+										> <i
+										class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+										Login
+									</a>
+								</sec:authorize>
+								<form id="logoutForm" action="/logout" method="post">
+									<input type="hidden" name="${_csrf.parameterName}"
+										value="${_csrf.token}">
+								</form>
 							</div></li>
 
 					</ul>
@@ -362,3 +391,15 @@
 
 					<script
 						src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+					<script type="text/javascript">
+					$(document).ready(function(){
+						
+						$("#logoutLink").on("click",function(e){
+							e.preventDefault();
+							$("#logoutForm").submit();				
+						});
+						
+					});
+					
+					</script>
