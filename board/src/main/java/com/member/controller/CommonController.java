@@ -83,5 +83,14 @@ public class CommonController {
 		log.info("auth : " + auth);
 
 	}
+	
+	// TODO 0901 로그아웃 커스텀 해주기
+	@GetMapping("customLogout")
+	public String customLogout() {
+		log.info("커스텀 로그아웃....");
+		
+		//TODO 0901 페이지 만들어주기... view...없이...
+		return "common/logout";
+	}
 
 }
