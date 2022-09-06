@@ -12,5 +12,4 @@ public class BoardVO {
 	private String writer;
 	private Date reg;
 	
-
 }

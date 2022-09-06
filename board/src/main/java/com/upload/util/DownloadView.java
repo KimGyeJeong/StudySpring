@@ -1,4 +1,4 @@
-﻿package com.upload.util;
+package com.upload.util;
 
 import java.io.File;
 import java.io.FileInputStream;
